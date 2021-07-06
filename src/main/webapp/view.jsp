@@ -1,9 +1,7 @@
-<%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="dao.bbnDAO"%>
 <%@ page import="vo.Bbn"%>
+<%@ page import="dao.bbnDAO"%>
 <%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,10 +17,18 @@
 	if (session.getAttribute("userId") != null) {
 		userId = (String) session.getAttribute("userId");
 	}
-	int pageNumber = 1;
-	if (request.getParameter("pageNumber") != null) {
-		pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+	int bbnId = 0;
+	if (request.getParameter("bbnId") != null) {
+		bbnId = Integer.parseInt(request.getParameter("bbnId"));
 	}
+	if (bbnId == 0) {
+		PrintWriter pr = response.getWriter();
+		pr.println("<script>");
+		pr.println("alert('삭제된 글입니다.')");
+		pr.println("location.href='bbn.jsp'");
+		pr.println("</script>");
+	}
+	Bbn bbn = new bbnDAO().getBbn(bbnId);
 	%>
 	<nav class="navbar navbar-default">
 		<div class="navbar-header">
@@ -74,7 +80,6 @@
 			</ul>
 			<%
 			}
-			;
 			%>
 		</div>
 	</nav>
@@ -83,41 +88,38 @@
 			<table class="table talbe-striped" style="text-align: center; border: 1px sodid #ddddddd">
 				<thead>
 					<tr>
-						<th style="background-color: #eeeeee; text-align: center;">번호</th>
-						<th style="background-color: #eeeeee; text-align: center;">제목</th>
-						<th style="background-color: #eeeeee; text-align: center;">작성자</th>
-						<th style="background-color: #eeeeee; text-align: center;">작성일</th>
+						<th colspan="3" style="background-color: #eeeeee; text-align: center;">게시판 내용</th>
 					</tr>
 				</thead>
 				<tbody>
-					<%
-					bbnDAO bbnDao = new bbnDAO();
-					ArrayList<Bbn> list = bbnDao.getList(pageNumber);
-					for (int i = 0; i < list.size(); i++) {
-					%>
 					<tr>
-						<td><%=list.get(i).getBbnId()%></td>
-						<td><a href="view.jsp?bbnId=<%=list.get(i).getBbnId()%>"><%=list.get(i).getBbnTitle().replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&rt;").replaceAll("\n", "<br>")%></a></td>
-						<td><%=list.get(i).getUserId()%></td>
-						<td><%=list.get(i).getBbnDate()%></td>
+						<td style="">글제목</td>
+						<td colspan="2"><%=bbn.getBbnTitle()%></td>
 					</tr>
-					<%
-					}
-					%>
+					<tr>
+						<td style="">작성자</td>
+						<td colspan="2"><%=bbn.getUserId()%></td>
+					</tr>
+					<tr>
+						<td style="">작성일자</td>
+						<td colspan="2"><%=bbn.getBbnDate()%></td>
+					</tr>
+					<tr>
+						<td style="">내용</td>
+						<td colspan="2" style="text-align: left; min-height: 200px;"><%=bbn.getBbnContent()%></td>
+					</tr>
 				</tbody>
 			</table>
-			<%
-			if (pageNumber != 1) {
-			%>
-			<a href="bbn.jsp?pageNumber=<%=pageNumber-1%>" class="btn btn-success btn-arrow-left">이전</a>
-			<%
-			} if (bbnDao.nextPage(pageNumber)) {
-			%>
-			<a href="bbn.jsp?pageNumber=<%=pageNumber+1%>" class="btn btn-success btn-arrow-left">다음</a>
-			<%
+			<a href="bbn.jsp" class="btn btn-primary">목록</a>
+			<% 
+			if(userId !=null && userId.equals(bbn.getUserId())){
+			 %>
+			<a href="update.jsp?bbnId=<%=bbnId%>" class="btn btn-primary">수정</a>
+			<a onclick="alert('삭제 ㄱㄱ?')" href="deleteAction.jsp?bbnId=<%=bbnId%>" class="btn btn-primary">삭제</a>
+			<% 
 			}
-			%>
-			<a href="write.jsp" class="btn btn-primary pull-right">글쓰기 </a>
+			 %>
+			<a href="write.jsp" class="btn btn-primary pull-right">글쓰기</a>
 		</div>
 	</div>
 	<!-- jQuery (부트스트랩의 자바스크립트 플러그인을 위해 필요합니다) -->

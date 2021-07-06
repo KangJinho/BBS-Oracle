@@ -7,14 +7,16 @@ public class Bbn {
 	private String bbnTitle;
 	private String userId;
 	private Timestamp bbnDate;
+	private String bbnContent;
+	private int bbnAvailable;
+	
 	public Timestamp getBbnDate() {
 		return bbnDate;
 	}
 	public void setBbnDate(Timestamp bbnDate) {
 		this.bbnDate = bbnDate;
 	}
-	private String bbnContent;
-	private int bbnAvailable;
+
 	
 	public int getBbnId() {
 		return bbnId;
